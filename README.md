@@ -18,7 +18,5 @@ Note that just installing the source code and running ```main.py``` will not be 
 1. Host a bot and make it something bigger than just a github repo
 2. Make the bot asynchronous (there are some problems with AsyncTeleBot right now)
 
-## Credits
-
 # ---<>---<>--- FilmReviewsBot ---<>---<>---
 (c) cat dev 2024
