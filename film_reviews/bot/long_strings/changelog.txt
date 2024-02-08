@@ -1,0 +1,4 @@
+Current bot version: v0.0.3.dev.release
+Changelog:
+- all bot commands are now fully functional
+- release!
