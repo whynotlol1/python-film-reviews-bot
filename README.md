@@ -1,5 +1,5 @@
 # ---<>---<>--- FilmReviewsBot ---<>---<>---
-# Project development is temporarily stopped due to lack of further plans
+# Project will be rewritten soon
 ## Requirements:
 
 > python 3.10+
