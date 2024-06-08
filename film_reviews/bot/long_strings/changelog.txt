@@ -1,4 +1,5 @@
-Current bot version: v0.0.3.dev.release
-Changelog:
-- all bot commands are now fully functional
-- release!
+<i>Current bot version:</i> <b>v0.1.0.release</b>
+<i>Changelog:</i>
+- Bot data API fully rewritten
+- Code maintenance
+- Removed useless commands

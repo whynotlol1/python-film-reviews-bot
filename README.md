@@ -13,10 +13,5 @@ Note that just installing the source code and running ```main.py``` will not be 
 2. Copy the bot's API token and paste it into the ```film_reviews/data/token.txt``` file
 3. Create the ```film_reviews/data/reviews``` directory
 
-## Future plans:
-
-1. Host a bot and make it something bigger than just a github repo
-2. Make the bot asynchronous (there are some problems with AsyncTeleBot right now)
-
 # ---<>---<>--- FilmReviewsBot ---<>---<>---
 (c) cat dev 2024

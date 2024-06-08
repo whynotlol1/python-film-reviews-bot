@@ -1,13 +1,17 @@
 # (c) cat dev 2024
 
-from film_reviews.data import data_tools as dt
+from dotenv import load_dotenv
+from telebot import TeleBot
 from telebot import types
+from os import getenv
 import telebot
 
-with open("../data/token.txt", "r") as token_file:
-    bot = telebot.TeleBot(token_file.read())
 
+load_dotenv()
 
+bot = TeleBot(token=getenv("token"))
+
+"""
 @bot.callback_query_handler(lambda call: True)
 def callback_query(call):
     if int(call.data.split(" ")[0]) in range(1, 6):
@@ -17,19 +21,22 @@ def callback_query(call):
         }
         msg = bot.send_message(call.message.chat.id, f"Added your mark ({int(call.data.split(" ")[0])}) to the review form successfully. Now, please, write the review text.")
         bot.register_next_step_handler(msg, leave_review_step2, form)
+"""
 
 
 @bot.message_handler(commands=["start", "help"])
 def help_message(message):
-    with open("long_strings/help_message_text.txt", "r") as f:
-        bot.send_message(message.from_user.id, f.read())
+    with open("film_reviews/bot/long_strings/help_message_text.txt", "r") as f:
+        bot.send_message(message.from_user.id, f.read(), parse_mode="html")
 
 
 @bot.message_handler(commands=["changelog"])
 def changelog_message(message):
-    with open("long_strings/changelog.txt", "r") as f:
-        bot.send_message(message.from_user.id, f.read())
+    with open("film_reviews/bot/long_strings/changelog.txt", "r") as f:
+        bot.send_message(message.from_user.id, f.read(), parse_mode="html")
 
+
+"""
 
 @bot.message_handler(commands=["report_bug"])
 def report_bug_step1(message):
@@ -94,7 +101,4 @@ def leave_review_step2(message, review_form):
     review_form["review_text"] = message.text
     dt.leave_review(review_form)
     bot.send_message(message.from_user.id, "Done. Now other users can see your review.")
-
-
-if __name__ == "__main__":
-    bot.polling(none_stop=True)
+"""

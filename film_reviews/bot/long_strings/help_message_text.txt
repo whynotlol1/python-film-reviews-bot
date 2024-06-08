@@ -1,12 +1,13 @@
-Hello and welcome to the FilmReviewer telegram bot.
+Hello and welcome to the <b>FilmReviewer</b> telegram bot.
 
 Using this bot you can leave your review on the film you have watched or read other people's reviews on the films you would like to watch.
 
-To read the reviews on the film you would like to watch, use /read_reviews <film name>.
+<b>To read the reviews</b> on the film you would like to watch, use <b>/read_reviews [film name]</b>.
 
-To leave a review on the film you have watched, use /leave_review <film name>.
+<b>To leave a review</b> on the film you have watched, use <b>/leave_review [film name]</b>.
 
-NOTE: You can use any case for the film name (e.g. American Psycho = american psycho).
+<i>NOTE: You can use any case for the film name (e.g. American Psycho = american psycho).</i>
 
-If you experience any issues with the bot or find any bugs, use /report_bug or DM @cat_dev_lol if you feel like it needs to be fixed immediately.
-Use /changelog to see the bot's current version and changelog.
+Use <b>/changelog to see the bot's current version and changelog</b>.
+
+<i>If you experience any issues with the bot or find any bugs, DM @cat_dev_lol.</i>

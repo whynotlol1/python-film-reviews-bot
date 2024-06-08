@@ -6,30 +6,19 @@ import random
 import json
 import os
 
-conn = sqlite3.connect("../data/data.db", check_same_thread=False)
+conn = sqlite3.connect(database="film_reviews/data/data.db", check_same_thread=False)
 cur = conn.cursor()
 
-cur.execute("""
-CREATE TABLE IF NOT EXISTS films (
-    id INTEGER,
-    name TEXT,
-    review_count INTEGER
-)
-""")
-conn.commit()
-cur.execute("""
-CREATE TABLE IF NOT EXISTS bugs (
-    description TEXT
-)
-""")
-conn.commit()
 
-last_id_check = cur.execute("SELECT id FROM films WHERE 1=1").fetchone()
-if last_id_check is not None:
-    last_id_obj = cur.execute("SELECT id FROM films WHERE 1=1").fetchall()
-    last_id = last_id_obj[len(last_id_obj) - 1][0]
-else:
-    last_id = 0
+def start():
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS films (
+        id INTEGER,
+        name TEXT,
+        review_count INTEGER
+    )
+    """)
+    conn.commit()
 
 
 def check_film(film_name):
@@ -45,6 +34,7 @@ def check_film(film_name):
 
 
 def leave_review(review_form):
+    """
     global last_id
     name = review_form["film_name"]
     check = cur.execute("SELECT * FROM films WHERE name=?", (name,)).fetchone()
@@ -59,9 +49,11 @@ def leave_review(review_form):
         conn.commit()
     with open(f"../data/reviews/{film_id}_{random.randint(1000, 1000001)}.json", "w") as f:
         f.write(json.dumps(review_form))
+    """
 
 
 def get_reviews(film_name):
+    """
     check = cur.execute("SELECT * FROM films WHERE name=?", (film_name,)).fetchone()
     if check is not None:
         obj = cur.execute("SELECT id FROM films WHERE name=?", (film_name,)).fetchone()
@@ -76,3 +68,4 @@ def get_reviews(film_name):
         return reviews
     else:
         return None
+    """
