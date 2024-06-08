@@ -1,21 +1,33 @@
 # (c) cat dev 2024
 
-import requests
 import sqlite3
 import random
+import string
 import json
-import os
 
 conn = sqlite3.connect(database="film_reviews/data/data.db", check_same_thread=False)
 cur = conn.cursor()
 
 
+def to_str(a: list):
+    b: str = ""
+    for el in a:
+        b += el
+    return b
+
+
 def start():
     cur.execute("""
     CREATE TABLE IF NOT EXISTS films (
-        id INTEGER,
-        name TEXT,
-        review_count INTEGER
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT
+    )
+    """)
+    conn.commit()
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS blacklist (
+        blacklisted_id INTEGER,
+        blacklisted_by INTEGER
     )
     """)
     conn.commit()
@@ -25,24 +37,20 @@ def start():
 # def check_for_valid_film_name(name: str) -> bool:
 
 
-def leave_review(review_form):
-    global last_id
-    name = review_form["film_name"]
-    check = cur.execute("SELECT * FROM films WHERE name=?", (name,)).fetchone()
+def leave_review(review_form: dict):
+    film_name = review_form["film_name"]
+    check = cur.execute("SELECT id FROM films WHERE name=?", (film_name,)).fetchone()
     if check is None:
-        cur.execute("INSERT INTO films VALUES (?,?,?)", ((last_id := last_id + 1), name, 1))
+        cur.execute("INSERT INTO films (name) VALUES (?)", (film_name,))
         conn.commit()
-        film_id = last_id
+        film_id = cur.execute("SELECT id FROM films WHERE name=?", (film_name,)).fetchone()[0]
     else:
-        obj = cur.execute("SELECT review_count, id FROM films WHERE name=?", (name,)).fetchone()
-        review_count, film_id = obj[0], obj[1]
-        cur.execute("UPDATE films SET review_count=? WHERE name=?", (review_count + 1, name))
-        conn.commit()
-    with open(f"../data/reviews/{film_id}_{random.randint(1000, 1000001)}.json", "w") as f:
+        film_id = check[0]
+    with open(f"film_reviews/data/reviews/{film_id}_{to_str(random.sample(string.ascii_letters, random.randint(15, 25)))}", "w") as f:
         f.write(json.dumps(review_form))
 
 
-def get_reviews(film_name):
+def get_reviews(film_name: str):
     """
     check = cur.execute("SELECT * FROM films WHERE name=?", (film_name,)).fetchone()
     if check is not None:
