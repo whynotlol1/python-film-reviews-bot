@@ -3,3 +3,5 @@
 - Bot data API fully rewritten
 - Code maintenance
 - Removed useless commands
+- Added moderators
+- Added blacklist

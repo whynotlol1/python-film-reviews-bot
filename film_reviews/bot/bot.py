@@ -11,6 +11,8 @@ load_dotenv()
 
 bot = TeleBot(token=getenv("token"))
 
+message_texts_dir = "film_reviews/bot/message_strings"
+
 """
 @bot.callback_query_handler(lambda call: True)
 def callback_query(call):
@@ -25,53 +27,24 @@ def callback_query(call):
 
 
 @bot.message_handler(commands=["start", "help"])
-def help_message(message):
-    with open("film_reviews/bot/long_strings/help_message_text.txt", "r") as f:
-        bot.send_message(message.from_user.id, f.read(), parse_mode="html")
+def help_message(message: telebot.types.Message):
+    with open(f"{message_texts_dir}/help_message_text.txt", "r") as message_file:
+        bot.send_message(message.chat.id, message_file.read(), parse_mode="html")
 
 
 @bot.message_handler(commands=["changelog"])
-def changelog_message(message):
-    with open("film_reviews/bot/long_strings/changelog.txt", "r") as f:
-        bot.send_message(message.from_user.id, f.read(), parse_mode="html")
+def changelog_message(message: telebot.types.Message):
+    with open(f"{message_texts_dir}/changelog.txt", "r") as message_file:
+        bot.send_message(message.chat.id, message_file.read(), parse_mode="html")
+
+
+@bot.message_handler(commands=["mod_help"])
+def mod_help_message(message: telebot.types.Message):
+    with open(f"{message_texts_dir}/mod_help_message_text.txt", "r") as message_file:
+        bot.send_message(message.chat.id, message_file.read(), parse_mode="html")  # TODO - moderators log in etc.
 
 
 """
-
-@bot.message_handler(commands=["report_bug"])
-def report_bug_step1(message):
-    msg = bot.send_message(message.from_user.id, "Please, describe the bug or issue you have found.")
-    bot.register_next_step_handler(msg, report_bug_step2)
-
-
-def report_bug_step2(message):
-    dt.cur.execute("INSERT INTO bugs VALUES (?)", (message.text,))
-    dt.conn.commit()
-    bot.send_message(message.from_user.id, "Thank you for your feedback. This bug or issue will be fixed soon.")
-
-
-@bot.message_handler(commands=["read_reviews"])
-def read_reviews_step1(message):
-    args = message.text.split(" ")
-    del args[0]
-    if len(args) == 0:
-        bot.send_message(message.from_user.id, "It seems like you didn't specify the film name!")
-    else:
-        txt_args = ""
-        for el in args:
-            txt_args += f"{el} "
-        film_name = txt_args[:-1]
-        if dt.check_film(film_name.lower().title()) != "Not Found":
-            if dt.get_reviews(film_name.lower().title()) is not None:
-                bot.send_message(message.from_user.id, "Now the bot will send all the reviews found for that film.")
-                for rating, text in dt.get_reviews(film_name.lower().title()).items():
-                    bot.send_message(message.from_user.id, f"Rating: {rating}\n\n{text}")
-            else:
-                bot.send_message(message.from_user.id, "It seems like other users haven't left any reviews on that film yet.")
-        else:
-            bot.send_message(message.from_user.id, "Sorry but it seems like this film does not exist.")
-
-
 @bot.message_handler(commands=["leave_review"])
 def leave_review_step1(message):
     args = message.text.split(" ")
@@ -101,4 +74,26 @@ def leave_review_step2(message, review_form):
     review_form["review_text"] = message.text
     dt.leave_review(review_form)
     bot.send_message(message.from_user.id, "Done. Now other users can see your review.")
+
+
+@bot.message_handler(commands=["read_reviews"])
+def read_reviews_step1(message):
+    args = message.text.split(" ")
+    del args[0]
+    if len(args) == 0:
+        bot.send_message(message.from_user.id, "It seems like you didn't specify the film name!")
+    else:
+        txt_args = ""
+        for el in args:
+            txt_args += f"{el} "
+        film_name = txt_args[:-1]
+        if dt.check_film(film_name.lower().title()) != "Not Found":
+            if dt.get_reviews(film_name.lower().title()) is not None:
+                bot.send_message(message.from_user.id, "Now the bot will send all the reviews found for that film.")
+                for rating, text in dt.get_reviews(film_name.lower().title()).items():
+                    bot.send_message(message.from_user.id, f"Rating: {rating}\n\n{text}")
+            else:
+                bot.send_message(message.from_user.id, "It seems like other users haven't left any reviews on that film yet.")
+        else:
+            bot.send_message(message.from_user.id, "Sorry but it seems like this film does not exist.")
 """

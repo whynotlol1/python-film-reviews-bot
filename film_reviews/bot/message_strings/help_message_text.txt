@@ -8,6 +8,8 @@ Using this bot you can leave your review on the film you have watched or read ot
 
 <i>NOTE: You can use any case for the film name (e.g. American Psycho = american psycho).</i>
 
-Use <b>/changelog to see the bot's current version and changelog</b>.
+<i>If you are a moderator</i>, use <b>/mod_login to log in</b>
+
+<b>To see the bot's current version and changelog</b>, use <b>/changelog</b>.
 
 <i>If you experience any issues with the bot or find any bugs, DM @cat_dev_lol.</i>

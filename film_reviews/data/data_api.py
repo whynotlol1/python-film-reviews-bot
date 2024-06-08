@@ -21,20 +21,11 @@ def start():
     conn.commit()
 
 
-def check_film(film_name):
-    req_txt = ""
-    for word in film_name.split(" "):
-        req_txt += f"{word}_"
-    req_txt += "(film)"
-    req = requests.get(f"https://en.wikipedia.org/wiki/{req_txt}")
-    if req.status_code == 200:
-        return "Found"
-    else:
-        return "Not Found"
+# TODO check if film name is valid
+# def check_for_valid_film_name(name: str) -> bool:
 
 
 def leave_review(review_form):
-    """
     global last_id
     name = review_form["film_name"]
     check = cur.execute("SELECT * FROM films WHERE name=?", (name,)).fetchone()
@@ -49,7 +40,6 @@ def leave_review(review_form):
         conn.commit()
     with open(f"../data/reviews/{film_id}_{random.randint(1000, 1000001)}.json", "w") as f:
         f.write(json.dumps(review_form))
-    """
 
 
 def get_reviews(film_name):

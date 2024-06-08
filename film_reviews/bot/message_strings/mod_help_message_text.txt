@@ -1,0 +1,5 @@
+Here is the list of <b>moderator only</b> commands:
+
+<b>/blacklist [list | add | remove] [*extra args]</b> - <i>Manage the blacklist. Blacklisted users cannot leave reviews.</i>
+
+<b>/mod_read_reviews [film name]</b> - <i>Read film reviews in moderator mode. In moderator mode you can delete the reviews.</i>
