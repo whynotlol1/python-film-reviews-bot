@@ -98,6 +98,11 @@ def get_blacklist() -> str:
     return blacklist_str
 
 
+def user_in_blacklist(*, user_id: int) -> bool:
+    check = cur.execute("SELECT * FROM blacklist WHERE blacklisted_id=?", (user_id,)).fetchone()
+    return check is not None
+
+
 # TODO check if film name is valid
 # def check_for_valid_film_name(name: str) -> bool:
 

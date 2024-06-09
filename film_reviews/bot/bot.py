@@ -120,24 +120,27 @@ def blacklist_management(message: telebot.types.Message):
 
 @bot.message_handler(commands=["leave_review"])
 def leave_review_step1(message: telebot.types.Message):
-    args = message.text.split(" ")
-    del args[0]
-    if len(args) == 0:
-        bot.send_message(message.chat.id, "It seems like you didn't specify the film name!")
+    if not data_api.user_in_blacklist(user_id=message.from_user.id):
+        args = message.text.split(" ")
+        del args[0]
+        if len(args) == 0:
+            bot.send_message(message.chat.id, "It seems like you didn't specify the film name!")
+        else:
+            txt_args = ""
+            for el in args:
+                txt_args += f"{el} "
+            film_name = txt_args[:-1]
+            markup = types.InlineKeyboardMarkup()
+            markup.row(
+                types.InlineKeyboardButton(text="1", callback_data=f"1_{film_name}_{message.from_user.id}"),
+                types.InlineKeyboardButton(text="2", callback_data=f"2_{film_name}_{message.from_user.id}"),
+                types.InlineKeyboardButton(text="3", callback_data=f"3_{film_name}_{message.from_user.id}"),
+                types.InlineKeyboardButton(text="4", callback_data=f"4_{film_name}_{message.from_user.id}"),
+                types.InlineKeyboardButton(text="5", callback_data=f"5_{film_name}_{message.from_user.id}")
+            )
+            bot.send_message(message.chat.id, "Created a review form for you. Please, rate the film 1-5 using the buttons below.", reply_markup=markup)
     else:
-        txt_args = ""
-        for el in args:
-            txt_args += f"{el} "
-        film_name = txt_args[:-1]
-        markup = types.InlineKeyboardMarkup()
-        markup.row(
-            types.InlineKeyboardButton(text="1", callback_data=f"1_{film_name}_{message.from_user.id}"),
-            types.InlineKeyboardButton(text="2", callback_data=f"2_{film_name}_{message.from_user.id}"),
-            types.InlineKeyboardButton(text="3", callback_data=f"3_{film_name}_{message.from_user.id}"),
-            types.InlineKeyboardButton(text="4", callback_data=f"4_{film_name}_{message.from_user.id}"),
-            types.InlineKeyboardButton(text="5", callback_data=f"5_{film_name}_{message.from_user.id}")
-        )
-        bot.send_message(message.chat.id, "Created a review form for you. Please, rate the film 1-5 using the buttons below.", reply_markup=markup)
+        bot.send_message(message.chat.id, "It seems like you are blacklisted! Blacklisted users cannot leave reviews.")
 
 
 def leave_review_step2(message: telebot.types.Message, review_form: dict):
@@ -165,14 +168,14 @@ def read_reviews(message: telebot.types.Message):
                 if data_api.check_for_mod_login(user_id=message.from_user.id):
                     markup = types.InlineKeyboardMarkup()
                     markup.add(
-                        types.InlineKeyboardButton(text="Delete review",
-                                                   callback_data=f"delete_{reviews[i]["reviewer"]}_{reviews[i]["film_name"]}")
+                        types.InlineKeyboardButton(text="Delete review", callback_data=f"delete_{reviews[i]["reviewer"]}_{reviews[i]["film_name"]}")
                     )
                     bot.send_message(message.chat.id, f"<b>Reviewer: {reviews[i]["reviewer"]}</b>\n<b>Rating: {reviews[i]["rating"]}</b>\n<i>{reviews[i]["review_text"]}</i>", parse_mode="html", reply_markup=markup)
                 else:
                     bot.send_message(message.chat.id, f"<b>Reviewer: {reviews[i]["reviewer"]}</b>\n<b>Rating: {reviews[i]["rating"]}</b>\n<i>{reviews[i]["review_text"]}</i>", parse_mode="html")
                     count += 1
             bot.send_message(message.chat.id, f"Above are <i>{count}</i> reviews for film <b>{film_name[:-1].lower().title()}</b>.", parse_mode="html")
+
 
 @bot.message_handler(content_types=["text"])
 def on_command_error(message: telebot.types.Message):
