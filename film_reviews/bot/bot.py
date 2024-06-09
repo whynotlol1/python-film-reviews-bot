@@ -21,7 +21,7 @@ def callback_query(call: telebot.types.CallbackQuery):
         data_api.delete_review(user_id=int(call.data.split("_")[1]), film_name=call.data.split("_")[2])
         bot.edit_message_text("<i>Deleted.</i>", call.message.chat.id, call.message.id, parse_mode="html")
         bot.send_message(call.message.chat.id, "<i>Deleted the review successfully.</i>", parse_mode="html")
-    elif int(call.data.split("_")[0]) in range(1, 6):
+    elif int(call.data.split("_")[0]) in range(1, 11):
         form = {
             "reviewer": call.data.split("_")[2],
             "film_name": call.data.split("_")[1].lower().title(),
@@ -140,7 +140,14 @@ def leave_review_step1(message: telebot.types.Message):
                     types.InlineKeyboardButton(text="4", callback_data=f"4_{film_name}_{message.from_user.id}"),
                     types.InlineKeyboardButton(text="5", callback_data=f"5_{film_name}_{message.from_user.id}")
                 )
-                bot.send_message(message.chat.id, "Created a review form for you. Please, rate the film 1-5 using the buttons below.", reply_markup=markup)
+                markup.row(
+                    types.InlineKeyboardButton(text="6", callback_data=f"5_{film_name}_{message.from_user.id}"),
+                    types.InlineKeyboardButton(text="7", callback_data=f"5_{film_name}_{message.from_user.id}"),
+                    types.InlineKeyboardButton(text="8", callback_data=f"5_{film_name}_{message.from_user.id}"),
+                    types.InlineKeyboardButton(text="9", callback_data=f"5_{film_name}_{message.from_user.id}"),
+                    types.InlineKeyboardButton(text="10", callback_data=f"5_{film_name}_{message.from_user.id}")
+                )
+                bot.send_message(message.chat.id, "Created a review form for you. Please, rate the film 1-10 using the buttons below.", reply_markup=markup)
             else:
                 bot.send_message(message.chat.id, f"It seems like there is no such film: <b>{film_name.lower().title()}</b>", parse_mode="html")
     else:
