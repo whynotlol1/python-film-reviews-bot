@@ -1,10 +1,10 @@
 # (c) cat dev 2024
-import os
 
 from dotenv import load_dotenv
 from hashlib import sha512
 from os import listdir
 from os import getenv
+from os import mkdir
 import sqlite3
 import json
 
@@ -39,7 +39,7 @@ def start():
     )
     """)
     conn.commit()
-    os.mkdir("film_reviews/data/reviews")
+    mkdir("film_reviews/data/reviews")
 
 
 def add_moderator(*, moderator_id: int, password: str) -> str:
@@ -85,7 +85,6 @@ def blacklist_action(*, action: str, user_id: int, mod_id: int):
 
 def get_blacklist() -> str:
     check = cur.execute("SELECT * FROM blacklist").fetchone()
-    blacklist = cur.execute("SELECT * FROM blacklist")
     blacklist_str = "<i>Note: the list is only telegram IDs. No names etc.</i>\nBlacklist:\n"
     if check is not None:
         blacklist = cur.execute("SELECT * FROM blacklist").fetchall()
