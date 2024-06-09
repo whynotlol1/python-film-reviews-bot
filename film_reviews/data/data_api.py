@@ -1,6 +1,7 @@
 # (c) cat dev 2024
 
 from dotenv import load_dotenv
+from hashlib import sha512
 from os import listdir
 from os import getenv
 import sqlite3
@@ -20,13 +21,15 @@ def start():
     conn.commit()
     cur.execute("""
     CREATE TABLE IF NOT EXISTS moderators (
-        id INTEGER
+        id INTEGER,
+        password TEXT,
+        login_status INTEGER
     )
     """)
     conn.commit()
     load_dotenv()
     if cur.execute("SELECT * FROM moderators WHERE id=?", (int(getenv("adminid")),)).fetchone() is None:
-        cur.execute("INSERT INTO moderators VALUES (?)", (int(getenv("adminid")),))
+        cur.execute("INSERT INTO moderators VALUES (?, ?, ?)", (int(getenv("adminid")), "ALWAYS LOGGED IN", 1))
         conn.commit()
     cur.execute("""
     CREATE TABLE IF NOT EXISTS blacklist (
@@ -37,14 +40,36 @@ def start():
     conn.commit()
 
 
-def add_moderator(*, moderator_id: int) -> str:
+def add_moderator(*, moderator_id: int, password: str) -> str:
     check = cur.execute("SELECT * FROM moderators WHERE id=?", (moderator_id,)).fetchone()
     if check is None:
-        cur.execute("INSERT INTO moderators VALUES (?)", (moderator_id,))
+        cur.execute("INSERT INTO moderators VALUES (?, ?, ?)", (moderator_id, sha512(password.encode()).hexdigest(), 0))
         conn.commit()
         return "Done."
     else:
         return "Not needed."
+
+
+def can_log_in_as_mod(*, user_id: int) -> bool:
+    check = cur.execute("SELECT * FROM moderators WHERE id=?", (user_id,)).fetchone()
+    return check is not None
+
+
+def check_for_mod_login(*, user_id: int) -> bool:
+    check = cur.execute("SELECT login_status FROM moderators WHERE id=?", (user_id,)).fetchone()
+    return check[0] == 1
+
+
+def check_pass(*, user_id: int, password: str) -> bool:
+    check = cur.execute("SELECT password FROM moderators WHERE id=?", (user_id,)).fetchone()
+    return sha512(password.encode()).hexdigest() == check[0]
+
+
+def set_login_status(*, user_id: int, status: int):
+    check = cur.execute("SELECT password FROM moderators WHERE id=?", (user_id,)).fetchone()
+    if check[0] != "ALWAYS LOGGED IN":
+        cur.execute("UPDATE moderators SET login_status=? WHERE id=?", (status, user_id))
+        conn.commit()
 
 
 # TODO check if film name is valid

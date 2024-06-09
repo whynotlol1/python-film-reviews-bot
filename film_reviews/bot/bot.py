@@ -30,9 +30,9 @@ def callback_query(call):
 @bot.message_handler(commands=["add_moderator"])
 def add_moderator(message: telebot.types.Message):
     if message.from_user.id == int(getenv("adminid")):
-        bot.send_message(message.chat.id, data_api.add_moderator(moderator_id=int(message.text.split(" ")[1])))
+        bot.send_message(message.chat.id, data_api.add_moderator(moderator_id=int(message.text.split(" ")[1]), password=message.text.split(" ")[2]))
     else:
-        bot.send_message(message.chat.id, "You don't have the permission to use this command!")
+        bot.send_message(message.chat.id, "You do not have the permission to use this command!")
 
 
 @bot.message_handler(commands=["start", "help"])
@@ -49,8 +49,34 @@ def changelog_message(message: telebot.types.Message):
 
 @bot.message_handler(commands=["mod_help"])
 def mod_help_message(message: telebot.types.Message):
-    with open(f"{message_texts_dir}/mod_help_message_text.txt", "r") as message_file:
-        bot.send_message(message.chat.id, message_file.read(), parse_mode="html")  # TODO - moderators log in etc.
+    if data_api.check_for_mod_login(user_id=message.from_user.id):
+        with open(f"{message_texts_dir}/mod_help_message_text.txt", "r") as message_file:
+            bot.send_message(message.chat.id, message_file.read(), parse_mode="html")
+    else:
+        bot.send_message(message.chat.id, "You do not have the permission to use this command!")
+
+
+@bot.message_handler(commands=["mod_login"])
+def mod_login(message: telebot.types.Message):
+    if data_api.can_log_in_as_mod(user_id=message.from_user.id):
+        if data_api.check_for_mod_login(user_id=message.from_user.id) == 1:
+            bot.send_message(message.chat.id, "You are already logged in.")
+        else:
+            if data_api.check_pass(user_id=message.from_user.id, password=message.text.split(" ")[1]):
+                data_api.set_login_status(user_id=message.from_user.id, status=1)
+                bot.send_message(message.chat.id, "Logged in as moderator successfully.")
+            else:
+                bot.send_message(message.chat.id, "Wrong password.")
+    else:
+        bot.send_message(message.chat.id, "You are not a moderator.")
+
+
+@bot.message_handler(commands=["mod_logout"])
+def mod_logout(message: telebot.types.Message):
+    if data_api.check_for_mod_login(user_id=message.from_user.id):
+        bot.send_message(message.chat.id, "Logged out successfully.")
+    else:
+        bot.send_message(message.chat.id, "No need to log out.")
 
 
 @bot.message_handler(commands=["leave_review"])
@@ -82,7 +108,7 @@ def leave_review_step2(message: telebot.types.Message, review_form: dict):
 
 
 @bot.message_handler(commands=["read_reviews"])
-def read_reviews_step1(message: telebot.types.Message):
+def read_reviews(message: telebot.types.Message):
     args = message.text.split(" ")
     del args[0]
     if len(args) == 0:
@@ -100,6 +126,14 @@ def read_reviews_step1(message: telebot.types.Message):
                 bot.send_message(message.chat.id, f"<b>Rating: {reviews[i]["rating"]}</b>\n<i>{reviews[i]["review_text"]}</i>", parse_mode="html")
                 count += 1
             bot.send_message(message.chat.id, f"Above are <i>{count}</i> reviews for film <b>{film_name[:-1].lower().title()}</b>.", parse_mode="html")
+
+
+@bot.message_handler(commands=["mod_read_reviews"])
+def read_reviews_mod(message: telebot.types.Message):
+    if data_api.check_for_mod_login(user_id=message.from_user.id):
+        pass  # TODO
+    else:
+        bot.send_message(message.chat.id, "You do not have the permission to use this command!")
 
 
 @bot.message_handler(content_types=["text"])

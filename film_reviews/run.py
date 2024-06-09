@@ -1,3 +1,5 @@
+# (c) cat dev 2024
+
 from film_reviews.data import data_api
 from film_reviews.bot.bot import bot
 
