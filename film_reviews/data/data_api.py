@@ -5,9 +5,9 @@ from hashlib import sha512
 from os import listdir
 from os import remove
 from os import getenv
-from imdb import IMDb
 from os import mkdir
 from os import path
+import requests
 import sqlite3
 import json
 
@@ -105,14 +105,17 @@ def user_in_blacklist(*, user_id: int) -> bool:
 
 
 def check_for_valid_film_name(*, film_name: str) -> bool:
-    ia = IMDb()
-    try:
-        films = ia.search_movie(film_name)
-        if film_name in films:
-            return True
-        else:
-            return False
-    except Exception:
+    base_url = "http://www.omdbapi.com/"
+    params = {
+        "apikey": getenv("omdbkey"),
+        "t": film_name
+    }
+
+    response = requests.get(base_url, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        return data["Response"] == "True"
+    else:
         return False
 
 

@@ -177,7 +177,7 @@ def read_reviews(message: telebot.types.Message):
                 else:
                     bot.send_message(message.chat.id, f"<b>Reviewer: {reviews[i]["reviewer"]}</b>\n<b>Rating: {reviews[i]["rating"]}</b>\n<i>{reviews[i]["review_text"]}</i>", parse_mode="html")
                     count += 1
-            bot.send_message(message.chat.id, f"Above are <i>{count}</i> reviews for film <b>{film_name[:-1].lower().title()}</b>.", parse_mode="html")
+            bot.send_message(message.chat.id, f"Above are <i>{count+1}</i> reviews for film <b>{film_name[:-1].lower().title()}</b>.", parse_mode="html")
 
 
 @bot.message_handler(content_types=["text"])
