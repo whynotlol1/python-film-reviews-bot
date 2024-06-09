@@ -108,11 +108,11 @@ def check_for_valid_film_name(*, film_name: str) -> bool:
     ia = IMDb()
     try:
         films = ia.search_movie(film_name)
-        if films:
+        if film_name in films:
             return True
         else:
             return False
-    except Exception as e:
+    except Exception:
         return False
 
 
