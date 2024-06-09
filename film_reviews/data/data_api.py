@@ -22,6 +22,12 @@ def start():
         name TEXT
     )
     """)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS reviewers (
+            id INTEGER,
+            reviews INTEGER
+        )
+        """)
     conn.commit()
     cur.execute("""
     CREATE TABLE IF NOT EXISTS moderators (
@@ -110,7 +116,6 @@ def check_for_valid_film_name(*, film_name: str) -> bool:
         "apikey": getenv("omdbkey"),
         "t": film_name
     }
-
     response = requests.get(base_url, params=params)
     if response.status_code == 200:
         data = response.json()
@@ -130,6 +135,13 @@ def leave_review(*, review_form: dict):
         film_id = check[0]
     with open(f"film_reviews/data/reviews/{film_id}_{review_form["reviewer"]}.json", "w") as f:
         f.write(json.dumps(review_form))
+    check = cur.execute("SELECT reviews FROM reviewers WHERE id=?", (review_form["reviewer"],)).fetchone()
+    if check is None:
+        cur.execute("INSERT INTO reviewers VALUES (?, ?)", (review_form["reviewer"], 1))
+        conn.commit()
+    else:
+        cur.execute("UPDATE reviewers SET reviews=? WHERE id=?", (check[0] + 1, review_form["reviewer"]))
+        conn.commit()
 
 
 def get_reviews(*, film_name: str) -> list:
@@ -144,6 +156,14 @@ def get_reviews(*, film_name: str) -> list:
         return ["Not found"] if reviews == [] else reviews
     else:
         return ["Not found"]
+
+
+def get_user_profile(*, user_id: int) -> list:
+    check = cur.execute("SELECT reviews FROM reviewers WHERE id=?", (user_id,)).fetchone()
+    if check is None:
+        return ["no", can_log_in_as_mod(user_id=user_id)]
+    else:
+        return [f"{check[0]}", can_log_in_as_mod(user_id=user_id)]
 
 
 def delete_review(*, user_id: int, film_name: str):

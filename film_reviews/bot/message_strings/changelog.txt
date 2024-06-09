@@ -2,3 +2,4 @@
 <i>Changelog:</i>
 - Changed the way reviews are deleted
 - Rating is now 1-10
+- Added /profile command

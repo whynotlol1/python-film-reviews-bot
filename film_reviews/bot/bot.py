@@ -39,6 +39,12 @@ def add_moderator(message: telebot.types.Message):
         bot.send_message(message.chat.id, "You do not have the permission to use this command!")
 
 
+@bot.message_handler(commands=["profile"])
+def pofile(message: telebot.types.Message):
+    data = data_api.get_user_profile(user_id=message.from_user.id)
+    bot.send_message(message.chat.id, f"Your ID: <b>{message.from_user.id}</b>.\nYou have <b>{data[0]}</b> reviews.\n{"<i>You are a moderator.</i>" if data[1] else ""}", parse_mode="html")
+
+
 @bot.message_handler(commands=["start", "help"])
 def help_message(message: telebot.types.Message):
     with open(f"{message_texts_dir}/help_message_text.txt", "r") as message_file:
@@ -158,6 +164,7 @@ def leave_review_step2(message: telebot.types.Message, review_form: dict):
     review_form["review_text"] = message.text
     data_api.leave_review(review_form=review_form)
     bot.send_message(message.chat.id, "Done. Now other users can see your review.")
+    bot.send_message(message.chat.id, f"<b>Reviewer: {review_form["reviewer"]}</b>\n<b>Rating: {review_form["rating"]}</b>\n<i>{review_form["review_text"]}</i>", parse_mode="html")
 
 
 @bot.message_handler(commands=["read_reviews"])
