@@ -19,7 +19,8 @@ message_texts_dir = "film_reviews/bot/message_strings"
 def callback_query(call: telebot.types.CallbackQuery):
     if call.data.split("_")[0] == "delete":
         data_api.delete_review(user_id=int(call.data.split("_")[1]), film_name=call.data.split("_")[2])
-        bot.send_message(call.message.chat.id, "Deleted the review successfully.")
+        bot.edit_message_text("<i>Deleted.</i>", call.message.chat.id, call.message.id, parse_mode="html")
+        bot.send_message(call.message.chat.id, "<i>Deleted the review successfully.</i>", parse_mode="html")
     elif int(call.data.split("_")[0]) in range(1, 6):
         form = {
             "reviewer": call.data.split("_")[2],
