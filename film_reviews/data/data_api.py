@@ -3,8 +3,10 @@
 from dotenv import load_dotenv
 from hashlib import sha512
 from os import listdir
+from os import remove
 from os import getenv
 from os import mkdir
+from os import path
 import sqlite3
 import json
 
@@ -39,7 +41,8 @@ def start():
     )
     """)
     conn.commit()
-    mkdir("film_reviews/data/reviews")
+    if not path.isdir("film_reviews/data/reviews"):
+        mkdir("film_reviews/data/reviews")
 
 
 def add_moderator(*, moderator_id: int, password: str) -> str:
@@ -124,3 +127,9 @@ def get_reviews(*, film_name: str) -> list:
         return ["Not found"] if reviews == [] else reviews
     else:
         return ["Not found"]
+
+
+def delete_review(*, user_id: int, film_name: str):
+    film_id = cur.execute("SELECT id FROM films WHERE name=?", (film_name,)).fetchone()[0]
+    file_name = f"{film_id}_{user_id}.json"
+    remove(f"film_reviews/data/reviews/{file_name}")

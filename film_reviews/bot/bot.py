@@ -16,8 +16,11 @@ message_texts_dir = "film_reviews/bot/message_strings"
 
 
 @bot.callback_query_handler(lambda call: True)
-def callback_query(call):
-    if int(call.data.split("_")[0]) in range(1, 6):
+def callback_query(call: telebot.types.CallbackQuery):
+    if call.data.split("_")[0] == "delete":
+        data_api.delete_review(user_id=int(call.data.split("_")[1]), film_name=call.data.split("_")[2])
+        bot.send_message(call.message.chat.id, "Deleted the review successfully.")
+    elif int(call.data.split("_")[0]) in range(1, 6):
         form = {
             "reviewer": call.data.split("_")[2],
             "film_name": call.data.split("_")[1].lower().title(),
@@ -159,18 +162,17 @@ def read_reviews(message: telebot.types.Message):
         else:
             count = 0
             for i in range(5 if len(reviews) >= 5 else len(reviews)):
-                bot.send_message(message.chat.id, f"<b>Rating: {reviews[i]["rating"]}</b>\n<i>{reviews[i]["review_text"]}</i>", parse_mode="html")
-                count += 1
+                if data_api.check_for_mod_login(user_id=message.from_user.id):
+                    markup = types.InlineKeyboardMarkup()
+                    markup.add(
+                        types.InlineKeyboardButton(text="Delete review",
+                                                   callback_data=f"delete_{reviews[i]["reviewer"]}_{reviews[i]["film_name"]}")
+                    )
+                    bot.send_message(message.chat.id, f"<b>Reviewer: {reviews[i]["reviewer"]}</b>\n<b>Rating: {reviews[i]["rating"]}</b>\n<i>{reviews[i]["review_text"]}</i>", parse_mode="html", reply_markup=markup)
+                else:
+                    bot.send_message(message.chat.id, f"<b>Reviewer: {reviews[i]["reviewer"]}</b>\n<b>Rating: {reviews[i]["rating"]}</b>\n<i>{reviews[i]["review_text"]}</i>", parse_mode="html")
+                    count += 1
             bot.send_message(message.chat.id, f"Above are <i>{count}</i> reviews for film <b>{film_name[:-1].lower().title()}</b>.", parse_mode="html")
-
-
-@bot.message_handler(commands=["mod_read_reviews"])
-def read_reviews_mod(message: telebot.types.Message):
-    if data_api.check_for_mod_login(user_id=message.from_user.id):
-        pass  # TODO
-    else:
-        bot.send_message(message.chat.id, "You do not have the permission to use this command!")
-
 
 @bot.message_handler(content_types=["text"])
 def on_command_error(message: telebot.types.Message):

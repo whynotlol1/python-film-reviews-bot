@@ -1,1 +1,1 @@
-/start,/help,/changelog,/leave_review,/read_reviews,/add_moderator,/mod_login,/mod_logout,/mod_help,/mod_read_reviews,/blacklist
+/start,/help,/changelog,/leave_review,/read_reviews,/add_moderator,/mod_login,/mod_logout,/mod_help,/blacklist
