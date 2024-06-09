@@ -10,7 +10,9 @@
 > ```film_reviews/data/.env``` must contain ```adminid```* value.
 
 *where ```adminid``` is your telegram ID.
+
 6. Run ```python3 film_reviews/run.py``` in terminal
+
 7. Use ```/start``` or ```/help``` in DM with your telegram bot
 
 # ---<>---<>--- FilmReviewsBot ---<>---<>---
