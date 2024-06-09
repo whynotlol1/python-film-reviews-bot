@@ -72,6 +72,28 @@ def set_login_status(*, user_id: int, status: int):
         conn.commit()
 
 
+def blacklist_action(*, action: str, user_id: int, mod_id: int):
+    match action:
+        case "add":
+            cur.execute("INSERT INTO blacklist VALUES (?,?)", (user_id, mod_id))
+        case "remove":
+            cur.execute("DELETE FROM blacklist WHERE user_id=?", (user_id,))
+    conn.commit()
+
+
+def get_blacklist() -> str:
+    check = cur.execute("SELECT * FROM blacklist").fetchone()
+    blacklist = cur.execute("SELECT * FROM blacklist")
+    blacklist_str = "<i>Note: the list is only telegram IDs. No names etc.</i>\nBlacklist:\n"
+    if check is not None:
+        blacklist = cur.execute("SELECT * FROM blacklist").fetchall()
+        for el in blacklist:
+            blacklist_str += f"<b>{el[0]}</b> | <i>Blacklisted by {el[1]}</i>\n"
+    else:
+        blacklist_str += "<b>~ E M P T Y ~</b>"
+    return blacklist_str
+
+
 # TODO check if film name is valid
 # def check_for_valid_film_name(name: str) -> bool:
 

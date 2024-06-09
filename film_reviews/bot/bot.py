@@ -79,6 +79,42 @@ def mod_logout(message: telebot.types.Message):
         bot.send_message(message.chat.id, "No need to log out.")
 
 
+@bot.message_handler(commands=["blacklist"])
+def blacklist_management(message: telebot.types.Message):
+    if data_api.check_for_mod_login(user_id=message.from_user.id):
+        args = message.text.split(" ")
+        del args[0]
+        if len(args) > 0:
+            if args[0] in ["list", "add", "remove"]:
+                match args[0]:
+                    case "list":
+                        bot.send_message(message.chat.id, data_api.get_blacklist(), parse_mode="html")
+                    case "add":
+                        if args[1] != message.from_user.id:
+                            if len(args) > 1:
+                                data_api.blacklist_action(action="add", user_id=int(args[1]), mod_id=message.from_user.id)
+                                bot.send_message(message.chat.id, f"Added <b>{args[0]}</b> to blacklist.", parse_mode="html")
+                            else:
+                                bot.send_message(message.chat.id, "Specify the user id.")
+                        else:
+                            bot.send_message(message.chat.id, "You are trying to add yourself to the blacklist. It is forbidden.")
+                    case "remove":
+                        if args[1] != message.from_user.id:
+                            if len(args) > 1:
+                                data_api.blacklist_action(action="remove", user_id=int(args[1]), mod_id=message.from_user.id)
+                                bot.send_message(message.chat.id, f"Removed <b>{args[0]}</b> from blacklist.", parse_mode="html")
+                            else:
+                                bot.send_message(message.chat.id, "Specify the user id.")
+                        else:
+                            bot.send_message(message.chat.id, "You are trying to add yourself to the blacklist. It is forbidden.")
+            else:
+                bot.send_message(message.chat.id, f"Unknown action: {args[0]}")
+        else:
+            bot.send_message(message.chat.id, "Specify the action.")
+    else:
+        bot.send_message(message.chat.id, "No need to log out.")
+
+
 @bot.message_handler(commands=["leave_review"])
 def leave_review_step1(message: telebot.types.Message):
     args = message.text.split(" ")
