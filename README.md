@@ -1,4 +1,5 @@
 # ---<>---<>--- FilmReviewsBot ---<>---<>---
+version v0.1.3
 ## Manual:
 1. Install Python 3.10+
 2. Run ```pip3 install sqlite3, telebot``` in terminal
