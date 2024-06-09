@@ -141,11 +141,11 @@ def leave_review_step1(message: telebot.types.Message):
                     types.InlineKeyboardButton(text="5", callback_data=f"5_{film_name}_{message.from_user.id}")
                 )
                 markup.row(
-                    types.InlineKeyboardButton(text="6", callback_data=f"5_{film_name}_{message.from_user.id}"),
-                    types.InlineKeyboardButton(text="7", callback_data=f"5_{film_name}_{message.from_user.id}"),
-                    types.InlineKeyboardButton(text="8", callback_data=f"5_{film_name}_{message.from_user.id}"),
-                    types.InlineKeyboardButton(text="9", callback_data=f"5_{film_name}_{message.from_user.id}"),
-                    types.InlineKeyboardButton(text="10", callback_data=f"5_{film_name}_{message.from_user.id}")
+                    types.InlineKeyboardButton(text="6", callback_data=f"6_{film_name}_{message.from_user.id}"),
+                    types.InlineKeyboardButton(text="7", callback_data=f"7_{film_name}_{message.from_user.id}"),
+                    types.InlineKeyboardButton(text="8", callback_data=f"8_{film_name}_{message.from_user.id}"),
+                    types.InlineKeyboardButton(text="9", callback_data=f"9_{film_name}_{message.from_user.id}"),
+                    types.InlineKeyboardButton(text="10", callback_data=f"10_{film_name}_{message.from_user.id}")
                 )
                 bot.send_message(message.chat.id, "Created a review form for you. Please, rate the film 1-10 using the buttons below.", reply_markup=markup)
             else:
