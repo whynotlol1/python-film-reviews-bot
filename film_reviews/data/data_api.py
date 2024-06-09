@@ -1,4 +1,5 @@
 # (c) cat dev 2024
+import os
 
 from dotenv import load_dotenv
 from hashlib import sha512
@@ -38,6 +39,7 @@ def start():
     )
     """)
     conn.commit()
+    os.mkdir("film_reviews/data/reviews")
 
 
 def add_moderator(*, moderator_id: int, password: str) -> str:
