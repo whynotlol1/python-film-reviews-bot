@@ -1,7 +1,7 @@
 # (c) cat dev 2024
-import os
 
 from dotenv import load_dotenv
+from os import listdir
 from os import getenv
 import sqlite3
 import json
@@ -69,7 +69,7 @@ def get_reviews(*, film_name: str) -> list:
     if check is not None:
         film_id = check[0]
         reviews = list()
-        for file_name in os.listdir("film_reviews/data/reviews"):
+        for file_name in listdir("film_reviews/data/reviews"):
             if file_name.startswith(str(film_id)):
                 with open(f"film_reviews/data/reviews/{file_name}", "r") as file:
                     reviews.append(json.loads(file.read()))
