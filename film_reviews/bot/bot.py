@@ -18,13 +18,11 @@ message_texts_dir = "film_reviews/bot/message_strings"
 @bot.callback_query_handler(lambda call: True)
 def callback_query(call):
     if int(call.data.split("_")[0]) in range(1, 6):
-        print(call.data.split("_"))
         form = {
             "reviewer": call.data.split("_")[2],
             "film_name": call.data.split("_")[1].lower().title(),
             "rating": call.data.split("_")[0]
         }
-        print(form)
         msg = bot.send_message(call.message.chat.id, f"Added your mark (<b>{int(call.data.split("_")[0])}</b>) to the review form successfully. Now, please, write the review text.", parse_mode="html")
         bot.register_next_step_handler(msg, leave_review_step2, form)
 
@@ -84,13 +82,25 @@ def leave_review_step2(message: telebot.types.Message, review_form: dict):
 
 
 @bot.message_handler(commands=["read_reviews"])
-def read_reviews_step1(message):
+def read_reviews_step1(message: telebot.types.Message):
     args = message.text.split(" ")
     del args[0]
     if len(args) == 0:
         bot.send_message(message.chat.id, "It seems like you didn't specify the film name!")
     else:
-        pass
+        film_name = ""
+        for el in args:
+            film_name += f"{el} "
+        reviews = data_api.get_reviews(film_name=film_name[:-1].lower().title())
+        if reviews == ["Not found"]:
+            bot.send_message(message.chat.id, f"No reviews found for film <b>{film_name[:-1].lower().title()}</b>.", parse_mode="html")
+        else:
+            count = 0
+            if len(reviews) >= 5:
+                for i in range(5 if len(reviews) >= 5 else len(reviews)):
+                    bot.send_message(message.chat.id, f"<b>Rating: {reviews[i]["rating"]}</b>\n<i>{reviews[i]["review_text"]}</i>", parse_mode="html")
+                    count += 1
+            bot.send_message(message.chat.id, f"Above are {count + 1} reviews for film <b>{film_name[:-1].lower().title()}</b>.", parse_mode="html")
 
 
 @bot.message_handler(content_types=["text"])
@@ -98,4 +108,3 @@ def on_command_error(message: telebot.types.Message):
     with open("film_reviews/data/commands.txt", "r") as commands:
         if message.text.startswith("/") and message.text.split(" ")[0] not in commands.read().split(","):
             bot.send_message(message.chat.id, "Unknown command.")
-
