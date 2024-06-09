@@ -110,7 +110,7 @@ def blacklist_management(message: telebot.types.Message):
                             else:
                                 bot.send_message(message.chat.id, "Specify the user id.")
                         else:
-                            bot.send_message(message.chat.id, "You are trying to add yourself to the blacklist. It is forbidden.")
+                            bot.send_message(message.chat.id, "You are trying to remove yourself from the blacklist. It is forbidden.")
             else:
                 bot.send_message(message.chat.id, f"Unknown action: {args[0]}")
         else:
