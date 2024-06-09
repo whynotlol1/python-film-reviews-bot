@@ -130,15 +130,18 @@ def leave_review_step1(message: telebot.types.Message):
             for el in args:
                 txt_args += f"{el} "
             film_name = txt_args[:-1]
-            markup = types.InlineKeyboardMarkup()
-            markup.row(
-                types.InlineKeyboardButton(text="1", callback_data=f"1_{film_name}_{message.from_user.id}"),
-                types.InlineKeyboardButton(text="2", callback_data=f"2_{film_name}_{message.from_user.id}"),
-                types.InlineKeyboardButton(text="3", callback_data=f"3_{film_name}_{message.from_user.id}"),
-                types.InlineKeyboardButton(text="4", callback_data=f"4_{film_name}_{message.from_user.id}"),
-                types.InlineKeyboardButton(text="5", callback_data=f"5_{film_name}_{message.from_user.id}")
-            )
-            bot.send_message(message.chat.id, "Created a review form for you. Please, rate the film 1-5 using the buttons below.", reply_markup=markup)
+            if data_api.check_for_valid_film_name(film_name=film_name.lower().title()):
+                markup = types.InlineKeyboardMarkup()
+                markup.row(
+                    types.InlineKeyboardButton(text="1", callback_data=f"1_{film_name}_{message.from_user.id}"),
+                    types.InlineKeyboardButton(text="2", callback_data=f"2_{film_name}_{message.from_user.id}"),
+                    types.InlineKeyboardButton(text="3", callback_data=f"3_{film_name}_{message.from_user.id}"),
+                    types.InlineKeyboardButton(text="4", callback_data=f"4_{film_name}_{message.from_user.id}"),
+                    types.InlineKeyboardButton(text="5", callback_data=f"5_{film_name}_{message.from_user.id}")
+                )
+                bot.send_message(message.chat.id, "Created a review form for you. Please, rate the film 1-5 using the buttons below.", reply_markup=markup)
+            else:
+                bot.send_message(message.chat.id, f"It seems like there is no such film: <b>{film_name.lower().title()}</b>", parse_mode="html")
     else:
         bot.send_message(message.chat.id, "It seems like you are blacklisted! Blacklisted users cannot leave reviews.")
 

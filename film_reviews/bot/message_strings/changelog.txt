@@ -1,3 +1,4 @@
-<i>Current bot version:</i> <b>v0.1.0.b2.release</b>
+<i>Current bot version:</i> <b>v0.1.1</b>
 <i>Changelog:</i>
-- The bot SHOULD now be infinitely polling
+- Added check for a valid film name
+- Version is now displayed without <b>.release</b> postfix

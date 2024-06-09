@@ -5,6 +5,7 @@ from hashlib import sha512
 from os import listdir
 from os import remove
 from os import getenv
+from imdb import IMDb
 from os import mkdir
 from os import path
 import sqlite3
@@ -103,8 +104,16 @@ def user_in_blacklist(*, user_id: int) -> bool:
     return check is not None
 
 
-# TODO check if film name is valid
-# def check_for_valid_film_name(name: str) -> bool:
+def check_for_valid_film_name(*, film_name: str) -> bool:
+    ia = IMDb()
+    try:
+        films = ia.search_movie(film_name)
+        if films:
+            return True
+        else:
+            return False
+    except Exception as e:
+        return False
 
 
 def leave_review(*, review_form: dict):
