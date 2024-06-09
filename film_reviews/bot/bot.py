@@ -96,11 +96,10 @@ def read_reviews_step1(message: telebot.types.Message):
             bot.send_message(message.chat.id, f"No reviews found for film <b>{film_name[:-1].lower().title()}</b>.", parse_mode="html")
         else:
             count = 0
-            if len(reviews) >= 5:
-                for i in range(5 if len(reviews) >= 5 else len(reviews)):
-                    bot.send_message(message.chat.id, f"<b>Rating: {reviews[i]["rating"]}</b>\n<i>{reviews[i]["review_text"]}</i>", parse_mode="html")
-                    count += 1
-            bot.send_message(message.chat.id, f"Above are {count + 1} reviews for film <b>{film_name[:-1].lower().title()}</b>.", parse_mode="html")
+            for i in range(5 if len(reviews) >= 5 else len(reviews)):
+                bot.send_message(message.chat.id, f"<b>Rating: {reviews[i]["rating"]}</b>\n<i>{reviews[i]["review_text"]}</i>", parse_mode="html")
+                count += 1
+            bot.send_message(message.chat.id, f"Above are <i>{count}</i> reviews for film <b>{film_name[:-1].lower().title()}</b>.", parse_mode="html")
 
 
 @bot.message_handler(content_types=["text"])
