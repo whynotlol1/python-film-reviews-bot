@@ -12,8 +12,6 @@ load_dotenv()
 
 bot = TeleBot(token=getenv("token"))
 
-message_texts_dir = "film_reviews/bot/message_strings"
-
 
 @bot.callback_query_handler(lambda call: True)
 def callback_query(call: telebot.types.CallbackQuery):
@@ -47,20 +45,20 @@ def pofile(message: telebot.types.Message):
 
 @bot.message_handler(commands=["start", "help"])
 def help_message(message: telebot.types.Message):
-    with open(f"{message_texts_dir}/help_message_text.txt", "r") as message_file:
+    with open("film_reviews/bot/message_strings/help_message_text.txt", "r") as message_file:
         bot.send_message(message.chat.id, message_file.read(), parse_mode="html")
 
 
 @bot.message_handler(commands=["changelog"])
 def changelog_message(message: telebot.types.Message):
-    with open(f"{message_texts_dir}/changelog.txt", "r") as message_file:
+    with open("film_reviews/bot/message_strings/changelog.txt", "r") as message_file:
         bot.send_message(message.chat.id, message_file.read(), parse_mode="html")
 
 
 @bot.message_handler(commands=["mod_help"])
 def mod_help_message(message: telebot.types.Message):
     if data_api.check_for_mod_login(user_id=message.from_user.id):
-        with open(f"{message_texts_dir}/mod_help_message_text.txt", "r") as message_file:
+        with open("film_reviews/bot/message_strings/mod_help_message_text.txt", "r") as message_file:
             bot.send_message(message.chat.id, message_file.read(), parse_mode="html")
     else:
         bot.send_message(message.chat.id, "You do not have the permission to use this command!")
