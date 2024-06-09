@@ -29,6 +29,14 @@ def callback_query(call):
         bot.register_next_step_handler(msg, leave_review_step2, form)
 
 
+@bot.message_handler(commands=["add_moderator"])
+def add_moderator(message: telebot.types.Message):
+    if message.from_user.id == int(getenv("adminid")):
+        bot.send_message(message.chat.id, data_api.add_moderator(moderator_id=int(message.text.split(" ")[1])))
+    else:
+        bot.send_message(message.chat.id, "You don't have the permission to use this command!")
+
+
 @bot.message_handler(commands=["start", "help"])
 def help_message(message: telebot.types.Message):
     with open(f"{message_texts_dir}/help_message_text.txt", "r") as message_file:
@@ -52,7 +60,7 @@ def leave_review_step1(message: telebot.types.Message):
     args = message.text.split(" ")
     del args[0]
     if len(args) == 0:
-        bot.send_message(message.from_user.id, "It seems like you didn't specify the film name!")
+        bot.send_message(message.chat.id, "It seems like you didn't specify the film name!")
     else:
         txt_args = ""
         for el in args:
@@ -66,34 +74,28 @@ def leave_review_step1(message: telebot.types.Message):
             types.InlineKeyboardButton(text="4", callback_data=f"4_{film_name}_{message.from_user.id}"),
             types.InlineKeyboardButton(text="5", callback_data=f"5_{film_name}_{message.from_user.id}")
         )
-        bot.send_message(message.from_user.id, "Created a review form for you. Please, rate the film 1-5 using the buttons below.", reply_markup=markup)
+        bot.send_message(message.chat.id, "Created a review form for you. Please, rate the film 1-5 using the buttons below.", reply_markup=markup)
 
 
 def leave_review_step2(message: telebot.types.Message, review_form: dict):
     review_form["review_text"] = message.text
-    data_api.leave_review(review_form)
-    bot.send_message(message.from_user.id, "Done. Now other users can see your review.")
+    data_api.leave_review(review_form=review_form)
+    bot.send_message(message.chat.id, "Done. Now other users can see your review.")
 
 
-"""
 @bot.message_handler(commands=["read_reviews"])
 def read_reviews_step1(message):
     args = message.text.split(" ")
     del args[0]
     if len(args) == 0:
-        bot.send_message(message.from_user.id, "It seems like you didn't specify the film name!")
+        bot.send_message(message.chat.id, "It seems like you didn't specify the film name!")
     else:
-        txt_args = ""
-        for el in args:
-            txt_args += f"{el} "
-        film_name = txt_args[:-1]
-        if dt.check_film(film_name.lower().title()) != "Not Found":
-            if dt.get_reviews(film_name.lower().title()) is not None:
-                bot.send_message(message.from_user.id, "Now the bot will send all the reviews found for that film.")
-                for rating, text in dt.get_reviews(film_name.lower().title()).items():
-                    bot.send_message(message.from_user.id, f"Rating: {rating}\n\n{text}")
-            else:
-                bot.send_message(message.from_user.id, "It seems like other users haven't left any reviews on that film yet.")
-        else:
-            bot.send_message(message.from_user.id, "Sorry but it seems like this film does not exist.")
-"""
+        pass
+
+
+@bot.message_handler(content_types=["text"])
+def on_command_error(message: telebot.types.Message):
+    with open("film_reviews/data/commands.txt", "r") as commands:
+        if message.text.startswith("/") and message.text.split(" ")[0] not in commands.read().split(","):
+            bot.send_message(message.chat.id, "Unknown command.")
+

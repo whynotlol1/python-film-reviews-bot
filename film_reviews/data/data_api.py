@@ -1,5 +1,7 @@
 # (c) cat dev 2024
 
+from dotenv import load_dotenv
+from os import getenv
 import sqlite3
 import random
 import string
@@ -9,11 +11,11 @@ conn = sqlite3.connect(database="film_reviews/data/data.db", check_same_thread=F
 cur = conn.cursor()
 
 
-def to_str(a: list):
-    b: str = ""
-    for el in a:
-        b += el
-    return b
+def to_str(_a: list):
+    _b: str = ""
+    for el in _a:
+        _b += el
+    return _b
 
 
 def start():
@@ -25,6 +27,15 @@ def start():
     """)
     conn.commit()
     cur.execute("""
+    CREATE TABLE IF NOT EXISTS moderators (
+        id INTEGER
+    )
+    """)
+    conn.commit()
+    load_dotenv()
+    cur.execute(f"INSERT INTO moderators VALUES ({int(getenv("adminid"))})")
+    conn.commit()
+    cur.execute("""
     CREATE TABLE IF NOT EXISTS blacklist (
         blacklisted_id INTEGER,
         blacklisted_by INTEGER
@@ -33,11 +44,21 @@ def start():
     conn.commit()
 
 
+def add_moderator(*, moderator_id: int) -> str:
+    check = cur.execute("SELECT * FROM moderators WHERE id=?", (moderator_id,)).fetchone()
+    if check is None:
+        cur.execute("INSERT INTO moderators VALUES (?)", (moderator_id,))
+        conn.commit()
+        return "Done."
+    else:
+        return "Not needed."
+
+
 # TODO check if film name is valid
 # def check_for_valid_film_name(name: str) -> bool:
 
 
-def leave_review(review_form: dict):
+def leave_review(*, review_form: dict):
     film_name = review_form["film_name"]
     check = cur.execute("SELECT id FROM films WHERE name=?", (film_name,)).fetchone()
     if check is None:
@@ -50,8 +71,8 @@ def leave_review(review_form: dict):
         f.write(json.dumps(review_form))
 
 
-def get_reviews(film_name: str):
-    """
+"""
+def get_reviews(*, film_name: str):
     check = cur.execute("SELECT * FROM films WHERE name=?", (film_name,)).fetchone()
     if check is not None:
         obj = cur.execute("SELECT id FROM films WHERE name=?", (film_name,)).fetchone()
