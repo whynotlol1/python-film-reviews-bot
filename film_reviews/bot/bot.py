@@ -162,9 +162,14 @@ def read_reviews(message: telebot.types.Message):
         film_name = ""
         for el in args:
             film_name += f"{el} "
-        reviews = data_api.get_reviews(film_name=film_name[:-1].lower().title())
+        film_name = film_name.lower().title()
+        if film_name.find("Amount:") == -1:
+            film_name = film_name[:-1]
+        else:
+            film_name = film_name[:film_name.find("Amount:")-1]
+        reviews = data_api.get_reviews(film_name=film_name)
         if reviews == ["Not found"]:
-            bot.send_message(message.chat.id, f"No reviews found for film <b>{film_name[:-1].lower().title()}</b>.", parse_mode="html")
+            bot.send_message(message.chat.id, f"No reviews found for film <b>{film_name}</b>.", parse_mode="html")
         else:
             count = 0
             amount = int(message.text.split("amount:")[1]) if len(message.text.split("amount:")) > 1 else 5
@@ -178,7 +183,7 @@ def read_reviews(message: telebot.types.Message):
                 else:
                     bot.send_message(message.chat.id, f"<b>Reviewer: {reviews[i]["reviewer"]}</b>\n<b>Rating: {reviews[i]["rating"]}</b>\n<i>{reviews[i]["review_text"]}</i>", parse_mode="html")
                     count += 1
-            bot.send_message(message.chat.id, f"Above are <i>{count+1}</i> reviews for film <b>{film_name[:-1].lower().title()}</b>.", parse_mode="html")
+            bot.send_message(message.chat.id, f"Above are <i>{count+1}</i> reviews for film <b>{film_name}</b>.", parse_mode="html")
 
 
 @bot.message_handler(content_types=["text"])
