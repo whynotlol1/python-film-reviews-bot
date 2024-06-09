@@ -2,7 +2,7 @@ Hello and welcome to the <b>FilmReviewer</b> telegram bot.
 
 Using this bot you can leave your review on the film you have watched or read other people's reviews on the films you would like to watch.
 
-<b>To read the reviews</b> on the film you would like to watch, use <b>/read_reviews [film name]</b>.
+<b>To read the reviews</b> on the film you would like to watch, use <b>/read_reviews [film name] amount:[amount]</b>.
 
 <b>To leave a review</b> on the film you have watched, use <b>/leave_review [film name]</b>.
 

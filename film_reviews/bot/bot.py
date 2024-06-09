@@ -167,7 +167,8 @@ def read_reviews(message: telebot.types.Message):
             bot.send_message(message.chat.id, f"No reviews found for film <b>{film_name[:-1].lower().title()}</b>.", parse_mode="html")
         else:
             count = 0
-            for i in range(5 if len(reviews) >= 5 else len(reviews)):
+            amount = int(message.text.split("amount:")[1]) if len(message.text.split("amount:")) > 1 else 5
+            for i in range(amount if len(reviews) >= amount else len(reviews)):
                 if data_api.check_for_mod_login(user_id=message.from_user.id):
                     markup = types.InlineKeyboardMarkup()
                     markup.add(
