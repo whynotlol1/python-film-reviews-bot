@@ -179,6 +179,5 @@ def read_reviews(message: telebot.types.Message):
 
 @bot.message_handler(content_types=["text"])
 def on_command_error(message: telebot.types.Message):
-    with open("film_reviews/data/commands.txt", "r") as commands:
-        if message.text.startswith("/") and message.text.split(" ")[0] not in commands.read().split(","):
-            bot.send_message(message.chat.id, "Unknown command.")
+    if message.text.startswith("/"):
+        bot.send_message(message.chat.id, "Unknown command.")
